@@ -62,3 +62,31 @@ h1 { font-size: 28px; font-weight: 700; }
     word-break: break-all; /* This prevents long URLs from breaking the layout */
     font-weight: 500;
 }
+.header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.icon-btn {
+    background: none;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+footer {
+    margin-top: 40px;
+    text-align: center;
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+}
+
+#view-archive-btn {
+    background: none;
+    border: none;
+    color: #007aff;
+    font-size: 14px;
+    cursor: pointer;
+}

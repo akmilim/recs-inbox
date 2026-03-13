@@ -10,13 +10,18 @@
 
     <div id="app">
         <header>
-            <h1>My Inbox</h1>
-            <button id="add-btn" class="fab">+</button>
-        </header>
-
+    <h1>My Inbox</h1>
+    <div class="header-actions">
+        <button id="sort-btn" class="icon-btn">⇅</button>
+        <button id="add-btn" class="fab">+</button>
+    </div>
+</header>
         <main id="item-list">
             <p class="empty-state">Your inbox is empty. Add a link to get started!</p>
         </main>
+        <footer>
+    <button id="view-archive-btn">View Archived (Done) Items</button>
+</footer>
     </div>
 
     <script src="app.js"></script>
