@@ -1,0 +1,64 @@
+/* General Setup */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #f2f2f7; /* Light grey iPhone-style background */
+    margin: 0;
+    color: #1c1c1e;
+}
+
+#app {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+h1 { font-size: 28px; font-weight: 700; }
+
+/* The Floating Action Button (FAB) */
+.fab {
+    background-color: #007aff;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 30px;
+    box-shadow: 0 4px 10px rgba(0,122,255,0.3);
+    cursor: pointer;
+}
+
+/* Placeholder text */
+.empty-state {
+    text-align: center;
+    color: #8e8e93;
+    margin-top: 100px;
+}
+.link-card {
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid #e5e5ea;
+}
+
+.link-card p {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: #8e8e93;
+}
+
+.link-card a {
+    color: #007aff;
+    text-decoration: none;
+    word-break: break-all; /* This prevents long URLs from breaking the layout */
+    font-weight: 500;
+}
