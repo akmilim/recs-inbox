@@ -20,7 +20,7 @@ let showingArchive = false;
 async function fetchLinks() {
     console.log("Fetching from cloud...");
     const { data, error } = await supabaseClient
-        .from('links')
+        .from('recs-links')
         .select('*')
         .order('created_at', { ascending: !sortNewestFirst });
 
@@ -109,7 +109,7 @@ addBtn.addEventListener('click', async () => {
         status: 'active'
     };
 
-    const { error } = await supabaseClient.from('links').insert([newLinkData]);
+    const { error } = await supabaseClient.from('recs-links').insert([newLinkData]);
     if (error) alert("Save failed: " + error.message);
     else fetchLinks();
 });
@@ -117,7 +117,7 @@ addBtn.addEventListener('click', async () => {
 // Update Status (Done/Restore)
 async function updateStatus(id, newStatus) {
     const { error } = await supabaseClient
-        .from('links')
+        .from('recs-links')
         .update({ status: newStatus })
         .eq('id', id);
 
@@ -129,7 +129,7 @@ async function updateStatus(id, newStatus) {
 async function permanentlyDelete(id) {
     if (confirm("Delete this item forever?")) {
         const { error } = await supabaseClient
-            .from('links')
+            .from('recs-links')
             .delete()
             .eq('id', id);
 
