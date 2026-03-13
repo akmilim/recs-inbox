@@ -16,17 +16,28 @@ addBtn.addEventListener('click', async () => {
     console.log("Fetching title...");
 
     // 1. THE SCRAPER LOGIC
-    let title = url; // Default to URL if we fail
+    let title = url; 
     try {
-        // We use a public proxy to "peek" at the website's HTML
+        // We use a different proxy just in case the first one is down
         const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+        
+        if (!response.ok) throw new Error('Network response was not ok');
+        
         const data = await response.json();
         
-        // This looks for the <title> text inside the website's code
-        const doc = new DOMParser().parseFromString(data.contents, 'text/html');
-        title = doc.querySelector('title').innerText;
+        if (data.contents) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(data.contents, 'text/html');
+            const titleElement = doc.querySelector('title');
+            
+            if (titleElement && titleElement.innerText) {
+                title = titleElement.innerText.trim();
+            }
+        }
     } catch (error) {
-        console.log("Could not fetch title, using URL instead.");
+        console.error("Scraping failed:", error);
+        // Backup Plan: Try to make the URL look like a title by removing "https://"
+        title = url.replace('https://', '').replace('http://', '').split('/')[0];
     }
 
     // 2. THE HEURISTICS (Same as before)
