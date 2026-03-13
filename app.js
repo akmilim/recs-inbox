@@ -23,8 +23,8 @@ let showingArchive = false; // To toggle between Inbox and Archive
 // Run this immediately so saved links show up on page load
 renderLinks();
 
-addBtn.addEventListener('click', () => {
-    // 1. Ask for the Link
+addBtn.addEventListener('click', async () => {
+        // 1. Ask for the Link
     const url = prompt("Paste your link here:");
     if (!url) return; // Exit if they hit cancel
 
