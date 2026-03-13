@@ -17,7 +17,6 @@ let myLinks = [];
 
 
 // 1. LOAD: Check localStorage first
-let myLinks = JSON.parse(localStorage.getItem('STORAGE_KEY')) || [];
 let sortNewestFirst = true; // Our default sort
 let showingArchive = false; // To toggle between Inbox and Archive
 
@@ -128,10 +127,7 @@ function archiveLink(id) {
         myLinks[index].status = 'archived';
     }
 
-    // 3. Save the whole list (including the now-archived one)
-    localStorage.setItem('STORAGE_KEY', JSON.stringify(myLinks));
-
-    // 4. Refresh the screen
+    // 3. Refresh the screen
     renderLinks();
 }
 // Function for sorting toggle
@@ -170,10 +166,6 @@ async function permanentlyDelete(id) {
     }
 }
 
-function saveAndRefresh() {
-    localStorage.setItem('STORAGE_KEY', JSON.stringify(myLinks));
-    renderLinks();
-}
 // This turns your links into a "JSON" text file and downloads it
 function exportData() {
     const dataStr = JSON.stringify(myLinks);
