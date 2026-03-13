@@ -21,9 +21,13 @@
         </main>
         <footer>
     <button id="view-archive-btn">View Archived (Done) Items</button>
+    <div class="data-management">
+    <button onclick="exportData()">Backup My Links</button>
+    <button onclick="importData()">Restore from Backup</button>
+</div>
 </footer>
     </div>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>    
     <script src="app.js"></script>
 </body>
 </html>

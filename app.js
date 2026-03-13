@@ -1,8 +1,23 @@
+// --- 1. THE CLOUD CONNECTION ---
+// Paste your actual URL and Key inside the quotes
+const supabaseUrl = 'https://fvrbhicruxqgddxixwns.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2cmJoaWNydXhxZ2RkeGl4d25zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MTM1MzAsImV4cCI6MjA4ODk4OTUzMH0.5WucFFm4zq7UEwsaUzQY1BPBbRRiDsNM2VvB0eUGh-s';
+
+// This initializes the connection (Note: I changed the variable name slightly to 'supabase' for simplicity)
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+// --- 2. THE UI SELECTORS ---
+// We keep these so the app knows which buttons to listen to
 const addBtn = document.getElementById('add-btn');
 const itemList = document.getElementById('item-list');
 
+// --- 3. THE DATA ---
+// We start with an empty list. We will fill this from the cloud in a moment.
+let myLinks = [];
+
+
 // 1. LOAD: Check localStorage first
-let myLinks = JSON.parse(localStorage.getItem('myInboxLinks')) || [];
+let myLinks = JSON.parse(localStorage.getItem('STORAGE_KEY')) || [];
 let sortNewestFirst = true; // Our default sort
 let showingArchive = false; // To toggle between Inbox and Archive
 
@@ -34,22 +49,28 @@ addBtn.addEventListener('click', () => {
         source = "Instagram"; type = "social"; color = "#E1306C";
     }
 
-    // 4. CREATE THE ITEM
-    const newLink = {
-        status: 'active',
-        id: Date.now(),
+    // ... (Your prompt and heuristic code stays the same) ...
+
+    const newLinkData = {
         title: title,
-        link: url,
+        url: url,
         source: source,
         type: type,
         themeColor: color,
-        date: new Date().toLocaleDateString()
+        status: 'active'
     };
 
-    // 5. SAVE
-    myLinks.push(newLink);
-    localStorage.setItem('myInboxLinks', JSON.stringify(myLinks));
-    renderLinks();
+    // SAVE TO CLOUD:
+    const { error } = await supabase
+        .from('links')
+        .insert([newLinkData]);
+
+    if (error) {
+        alert("Failed to save to cloud: " + error.message);
+    } else {
+        // Refresh the list to show the new item
+        fetchLinks();
+    }
 });
 
 
@@ -108,7 +129,7 @@ function archiveLink(id) {
     }
 
     // 3. Save the whole list (including the now-archived one)
-    localStorage.setItem('myInboxLinks', JSON.stringify(myLinks));
+    localStorage.setItem('STORAGE_KEY', JSON.stringify(myLinks));
 
     // 4. Refresh the screen
     renderLinks();
@@ -128,21 +149,77 @@ document.getElementById('view-archive-btn').onclick = (e) => {
 };
 
 // Update status (Move to Done or Restore)
-function updateStatus(id, newStatus) {
-    const index = myLinks.findIndex(item => item.id === id);
-    if (index !== -1) myLinks[index].status = newStatus;
-    saveAndRefresh();
+async function updateStatus(id, newStatus) {
+    const { error } = await supabase
+        .from('links')
+        .update({ status: newStatus })
+        .eq('id', id); // 'eq' means 'equal to' - find the right row!
+
+    if (!error) fetchLinks();
 }
 
 // The Emergency Exit (Actual Delete)
-function permanentlyDelete(id) {
-    if (confirm("Are you sure? This removes it forever.")) {
-        myLinks = myLinks.filter(item => item.id !== id);
-        saveAndRefresh();
+async function permanentlyDelete(id) {
+    if (confirm("Delete forever?")) {
+        const { error } = await supabase
+            .from('links')
+            .delete()
+            .eq('id', id);
+
+        if (!error) fetchLinks();
     }
 }
 
 function saveAndRefresh() {
-    localStorage.setItem('myInboxLinks', JSON.stringify(myLinks));
+    localStorage.setItem('STORAGE_KEY', JSON.stringify(myLinks));
     renderLinks();
 }
+// This turns your links into a "JSON" text file and downloads it
+function exportData() {
+    const dataStr = JSON.stringify(myLinks);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    
+    const exportFileDefaultName = 'recs_backup.json';
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+}
+
+// This lets you paste that text back in if you ever lose your data
+function importData() {
+    const json = prompt("Paste your backup text here:");
+    if (json) {
+        try {
+            myLinks = JSON.parse(json);
+            saveAndRefresh();
+            alert("Data restored successfully!");
+        } catch (e) {
+            alert("Invalid backup data.");
+        }
+    }
+}
+// This function goes to the Cloud and brings the data back
+async function fetchLinks() {
+    console.log("Fetching from cloud...");
+    
+    // 1. Ask Supabase for everything in the 'links' table
+    const { data, error } = await supabase
+        .from('links')
+        .select('*')
+        .order('created_at', { ascending: sortNewestFirst ? false : true });
+
+    if (error) {
+        console.error("Error fetching links:", error.message);
+        return;
+    }
+
+    // 2. Update our local variable with the cloud data
+    myLinks = data;
+
+    // 3. Draw the list on the screen
+    renderLinks();
+}
+
+// 4. IMPORTANT: Call this function when the page first loads
+fetchLinks();
