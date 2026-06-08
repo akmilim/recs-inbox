@@ -1,42 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recs Inbox</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
     <div id="auth-screen" class="hidden">
-    <div class="auth-box">
-        <h2 id="auth-title">Welcome to Universal Recs</h2>
-        
-        <input type="email" id="auth-email" placeholder="Email Address" required>
-        <input type="password" id="auth-password" placeholder="Password" required>
-        
-        <button id="login-btn" class="primary-btn">Log In</button>
-        <button id="signup-btn" class="secondary-btn">Create Account</button>
-        
-        <p id="auth-toggle-text">Don't have an account? <span id="toggle-auth">Sign Up</span></p>
-    </div>
-</div>
-
-<div id="app-screen" class="hidden">
-    <header>
-        <h1>My Inbox</h1>
-        <div class="header-actions">
-            <button id="sort-btn" class="icon-btn">⇅</button>
-            <button id="logout-btn" class="logout-btn">Log Out</button>
-            <button id="add-btn" class="fab">+</button>
+        <div class="auth-box">
+            <h2 id="auth-title">Welcome to Universal Recs</h2>
+            
+            <input type="email" id="auth-email" placeholder="Email Address" required>
+            <input type="password" id="auth-password" placeholder="Password" required>
+            
+            <button id="login-btn" class="primary-btn">Log In</button>
+            <button id="signup-btn" class="secondary-btn">Create Account</button>
+            
+            <p id="auth-toggle-text">Don't have an account? <span id="toggle-auth">Sign Up</span></p>
         </div>
-    </header>
-
-    <main id="item-list">
-        </main>
-
-    <footer>
-        <button id="view-archive-btn">View Archived (Done) Items</button>
-            <div class="data-management">
-    <button onclick="exportData()">Backup My Links</button>
-    <button onclick="importData()">Restore from Backup</button>
-</div>
-    </footer>
-</div>
     </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>    
+
+    <div id="app-screen" class="hidden">
+        <header>
+            <h1>My Inbox</h1>
+            <div class="header-actions">
+                <button id="sort-btn" class="icon-btn">⇅</button>
+                <button id="logout-btn" class="logout-btn">Log Out</button>
+                <button id="add-btn" class="fab">+</button>
+            </div>
+        </header>
+
+        <main id="item-list">
+            </main>
+
+        <footer>
+            <button id="view-archive-btn">View Archived (Done) Items</button>
+            
+            <div class="data-management">
+                <button onclick="exportData()">Backup My Links</button>
+                <button onclick="importData()">Restore from Backup</button>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>    
     <script src="app.js"></script>
 </body>
 </html>
