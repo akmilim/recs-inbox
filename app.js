@@ -9,19 +9,87 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 const addBtn = document.getElementById('add-btn');
 const itemList = document.getElementById('item-list');
 
+// AUTH SELECTORS:
+const authScreen = document.getElementById('auth-screen');
+const appScreen = document.getElementById('app-screen');
+const emailInput = document.getElementById('auth-email');
+const passwordInput = document.getElementById('auth-password');
+const loginBtn = document.getElementById('login-btn');
+const signupBtn = document.getElementById('signup-btn');
+const logoutBtn = document.getElementById('logout-btn');
+
 // --- 3. THE STATE (The App's Memory) ---
 let myLinks = [];
 let sortNewestFirst = true;
 let showingArchive = false;
+let currentUser = null; // Track who is logged in
 
-// --- 4. THE FUNCTIONS ---
+// --- 4. THE AUTH WATCHER ---
+supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (session) {
+        // User is logged in!
+        currentUser = session.user;
+        
+        // Swap screens
+        authScreen.classList.add('hidden');
+        appScreen.classList.remove('hidden');
+        
+        // Load their specific links
+        fetchLinks();
+    } else {
+        // No user logged in
+        currentUser = null;
+        
+        // Swap screens
+        appScreen.classList.add('hidden');
+        authScreen.classList.remove('hidden');
+    }
+});
+
+// --- 5. AUTH BUTTON ACTIONS ---
+
+// Sign Up New Friend
+signupBtn.addEventListener('click', async () => {
+    const email = emailInput.value;
+    const password = passwordInput.value;
+    
+    if (!email || !password) return alert("Please fill in both fields");
+
+    const { error } = await supabaseClient.auth.signUp({ email, password });
+    
+    if (error) alert("Sign up error: " + error.message);
+    else alert("Account created! Check your email for a confirmation link if required, or try logging in.");
+});
+
+// Log In Existing Friend
+loginBtn.addEventListener('click', async () => {
+    const email = emailInput.value;
+    const password = passwordInput.value;
+    
+    if (!email || !password) return alert("Please fill in both fields");
+
+    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    
+    if (error) alert("Login error: " + error.message);
+});
+
+// Log Out
+logoutBtn.addEventListener('click', async () => {
+    const { error } = await supabaseClient.auth.signOut();
+    if (error) console.error("Logout failed:", error.message);
+});
+
+// --- 6. THE FUNCTIONS ---
 
 // This function pulls data from the Cloud
 async function fetchLinks() {
-    console.log("Fetching from cloud...");
+    if (!currentUser) return; // Guard clause if no one is logged in
+    
+    console.log("Fetching cloud links for user:", currentUser.email);
     const { data, error } = await supabaseClient
         .from('recs-links')
         .select('*')
+        .eq('user_id', currentUser.id) // ONLY get links matching this user's ID
         .order('created_at', { ascending: !sortNewestFirst });
 
     if (error) {
@@ -75,7 +143,7 @@ function renderLinks() {
     });
 }
 
-// --- 5. EVENT LISTENERS ---
+// --- 7. EVENT LISTENERS ---
 
 // Add a New Link
 addBtn.addEventListener('click', async () => {
